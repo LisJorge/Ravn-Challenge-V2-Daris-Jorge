@@ -1,6 +1,6 @@
-import { Body, Controller, HttpCode, HttpStatus, Post, Get, UsePipes, ValidationPipe, Query, Param, Patch, Delete } from '@nestjs/common';
+import { Body, Controller, HttpCode, HttpStatus, Post, Get, Query, Param, Patch, Delete } from '@nestjs/common';
 import { ProductsService } from '../services/products.service';
-import { CreateProductDto, GetAllProductsDto, UpdateProductDto } from '../dto';
+import { CreateProductDto, GetAllProductsDto, UpdateProductDto } from '../dtos';
 import { Product } from '@prisma/client';
 
 @Controller('products')
