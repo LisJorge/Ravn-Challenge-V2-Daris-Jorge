@@ -1,20 +1,41 @@
-import { Injectable } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { Product } from '@prisma/client';
 import { PrismaService } from 'src/prisma/services/prisma.service';
 import { CreateProductDto, GetAllProductsDto, UpdateProductDto } from '../dtos';
+import { CategoriesService } from 'src/categories/services';
 
 @Injectable()
 export class ProductsService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private categoriesService: CategoriesService,
+  ) {}
 
   async create(createProductDto: CreateProductDto): Promise<Product> {
-    return this.prisma.product.create({ data: createProductDto });
+    const { categoryIds, ...productDto } = createProductDto;
+    const categories = await this.categoriesService.findByIds(categoryIds);
+    return await this.prisma.product.create({
+      data: {
+        ...productDto,
+        categories: {
+          connect: categories,
+        },
+      },
+    });
   }
 
-  async findOne(
-    productId: number
-  ): Promise<Product> {
-    return this.prisma.product.findFirstOrThrow({where: {productId}});
+  async findOne(productId: number): Promise<Product> {
+    try {
+      return this.prisma.product.findFirstOrThrow({
+        where: { productId },
+        include: { categories: true },
+      });
+    } catch (e) {
+      throw new NotFoundException('Product not found');
+    }
   }
 
   async findAll(filter: GetAllProductsDto): Promise<Product[]> {
@@ -27,12 +48,18 @@ export class ProductsService {
     return this.prisma.product.findMany({
       skip,
       take,
-      where: categoryId? queryFilter : {}
+      where: categoryId ? queryFilter : {},
     });
   }
 
-  async update(productId: number, updateProductDto: UpdateProductDto): Promise<void> {
-    await this.prisma.product.update({where: {productId}, data: updateProductDto});
+  async update(
+    productId: number,
+    updateProductDto: UpdateProductDto,
+  ): Promise<void> {
+    await this.prisma.product.update({
+      where: { productId },
+      data: updateProductDto,
+    });
   }
 
   async remove(productId: number) {
@@ -46,5 +73,4 @@ export class ProductsService {
       message: `Success delete ${productId}`,
     };
   }
-
 }

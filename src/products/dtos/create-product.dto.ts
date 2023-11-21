@@ -31,5 +31,7 @@ export class CreateProductDto {
   @IsOptional()
   @IsBoolean()
   isActive: boolean;
-  //categories?: number[],
+
+  @IsOptional()
+  categoryIds?: number[];
 }

@@ -1,4 +1,15 @@
-import { Body, Controller, HttpCode, HttpStatus, Post, Get, Query, Param, Patch, Delete } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  HttpCode,
+  HttpStatus,
+  Post,
+  Get,
+  Query,
+  Param,
+  Patch,
+  Delete,
+} from '@nestjs/common';
 import { ProductsService } from '../services/products.service';
 import { CreateProductDto, GetAllProductsDto, UpdateProductDto } from '../dtos';
 import { Product } from '@prisma/client';
@@ -14,7 +25,7 @@ export class ProductsController {
   }
 
   @Get()
-  async findtAll(@Query() filter: GetAllProductsDto): Promise<Product[]>{
+  async findtAll(@Query() filter: GetAllProductsDto): Promise<Product[]> {
     return this.productsService.findAll(filter);
   }
 
@@ -25,8 +36,11 @@ export class ProductsController {
 
   @HttpCode(HttpStatus.NO_CONTENT)
   @Patch(':id')
-  async update(@Param('id') id: number, @Body() UpdateProductDto: UpdateProductDto) {
-    return await this.productsService.update(id, UpdateProductDto);
+  async update(
+    @Param('id') id: number,
+    @Body() updateProductDto: UpdateProductDto,
+  ) {
+    return await this.productsService.update(id, updateProductDto);
   }
 
   @Delete(':id')
