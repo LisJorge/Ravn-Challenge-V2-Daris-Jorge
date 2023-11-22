@@ -1,9 +1,11 @@
-import { Controller, Post, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, Post, Req, UseGuards } from '@nestjs/common';
 import { AuthService } from '../services';
 import { Request } from 'express';
-import { AuthUserDto } from '../dtos';
+import { AuthUserDto, SignUpUserDto } from '../dtos';
 import { AuthGuard } from '@nestjs/passport';
+import { Public } from '../decorators';
 
+@Public()
 @Controller('auth')
 export class AuthController {
   constructor(private authService: AuthService){}
@@ -13,5 +15,10 @@ export class AuthController {
   login(@Req() req:Request){
     const user = req.user as AuthUserDto;
     return this.authService.generateJwt(user); 
+  }
+
+  @Post('sing-up')
+  signUp(@Body() signUpUserDto: SignUpUserDto){
+    return this.authService.signUp(signUpUserDto);
   }
 }

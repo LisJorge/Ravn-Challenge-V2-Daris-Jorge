@@ -1,8 +1,9 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { UsersService } from 'src/users/services';
-import { AuthUserDto, TokenPayloadDto } from '../dtos';
+import { AuthUserDto, SignUpUserDto, TokenPayloadDto } from '../dtos';
 import { JwtService } from '@nestjs/jwt';
-import { checkPassword } from '../utils';
+import { checkPassword, encodePassword } from '../utils';
+import { Role } from '@prisma/client';
 
 @Injectable()
 export class AuthService {
@@ -34,5 +35,28 @@ export class AuthService {
     return {
       access_token: this.jwtService.sign(payload)
     };
+  }
+
+  async signUp(signUpUseDto: SignUpUserDto): Promise<any>{
+    const {password, ...userData} = signUpUseDto;
+    const hashedPassword = await encodePassword(password);
+    const defaultRole = Role.CLIENT;
+
+    const userCreated = await this.usersService.create({
+      ...userData,
+      password: hashedPassword,
+      role: defaultRole,
+    })
+
+    const tokenPayload : TokenPayloadDto = {
+      role: defaultRole,
+      sub: userCreated.userId,
+    }
+
+    const token = {
+      access_token: this.jwtService.sign(tokenPayload)
+    }
+
+    return token;
   }
 }
