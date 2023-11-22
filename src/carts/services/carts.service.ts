@@ -13,13 +13,13 @@ export class CartsService {
   }
 
   async findAll(filter: PaginationDto, userId: number): Promise<CartDetail[]> {
-    const { skip, take } = filter;
+    const { page, perPage } = filter;
     const queryFilter = {
       userId,
     };
     return this.prisma.cartDetail.findMany({
-      skip,
-      take,
+      skip: page - 1,
+      take: perPage,
       where: queryFilter,
     });
   }

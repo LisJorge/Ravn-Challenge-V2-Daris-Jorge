@@ -12,10 +12,12 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { ProductsService } from '../services/products.service';
-import { CreateProductDto, GetAllProductsDto, UpdateProductDto } from '../dtos';
+import { CreateProductDto, GetAllProductsDto, ProductDto, UpdateProductDto } from '../dtos';
 import { Product } from '@prisma/client';
 import { JwtAuthGuard } from 'src/auth/guards';
 import { Public } from 'src/auth/decorators';
+import { ApiPaginatedResponse } from 'src/common/decorators';
+import { PaginatedOutputDto } from 'src/common/dto';
 
 @UseGuards(JwtAuthGuard)
 @Controller('products')
@@ -30,7 +32,8 @@ export class ProductsController {
 
   @Public()
   @Get()
-  async findAll(@Query() filter: GetAllProductsDto): Promise<Product[]> {
+  @ApiPaginatedResponse(ProductDto)
+  async findAll(@Query() filter: GetAllProductsDto): Promise<PaginatedOutputDto<ProductDto>> {
     return this.productsService.findAll(filter);
   }
 
