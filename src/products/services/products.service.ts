@@ -1,11 +1,15 @@
-import {
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
-import { Product } from '@prisma/client';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { Prisma, Product } from '@prisma/client';
 import { PrismaService } from 'src/prisma/services/prisma.service';
-import { CreateProductDto, GetAllProductsDto, UpdateProductDto } from '../dtos';
+import {
+  CreateProductDto,
+  GetAllProductsDto,
+  ProductDto,
+  UpdateProductDto,
+} from '../dtos';
 import { CategoriesService } from 'src/categories/services';
+import { createPaginator } from 'prisma-pagination';
+import { PaginatedOutputDto } from 'src/common/dto';
 
 @Injectable()
 export class ProductsService {
@@ -16,7 +20,7 @@ export class ProductsService {
 
   async create(createProductDto: CreateProductDto): Promise<Product> {
     const { categoryIds, ...productDto } = createProductDto;
-    const categories = await this.categoriesService.findByIds(categoryIds);
+    const categories = categoryIds.map((categoryId) => ({categoryId}));
     return await this.prisma.product.create({
       data: {
         ...productDto,
@@ -24,6 +28,7 @@ export class ProductsService {
           connect: categories,
         },
       },
+      include: {categories: true}
     });
   }
 
@@ -38,37 +43,52 @@ export class ProductsService {
     }
   }
 
-  async findAll(filter: GetAllProductsDto): Promise<Product[]> {
-    const { skip, take, categoryId } = filter;
-    const queryFilter = {
-      categories: {
-        some: { categoryId },
+  async findAll(
+    filter: GetAllProductsDto,
+  ): Promise<PaginatedOutputDto<ProductDto>> {
+    const { page, perPage, categoryId } = filter;
+    const paginate = createPaginator({ perPage });
+    const queryFilter = categoryId
+      ? {
+          categories: {
+            some: { categoryId},
+          },
+        }
+      : {};
+    return paginate(
+      this.prisma.product,
+      {
+        include: {categories: true},
+        where: queryFilter,
       },
-    };
-    return this.prisma.product.findMany({
-      skip,
-      take,
-      where: categoryId ? queryFilter : {},
-    });
+      { page },
+    );
   }
 
   async update(
     productId: number,
     updateProductDto: UpdateProductDto,
   ): Promise<void> {
+    const { categoryIds, ...productData } = updateProductDto;
+    const categories = categoryIds.length? categoryIds.map((categoryId) => ({categoryId})): null;
     await this.findOne(productId);
     await this.prisma.product.update({
       where: { productId },
-      data: updateProductDto,
+      data: {
+        ...productData,
+        categories: {
+          connect: categories,
+        },
+      },
     });
   }
 
   async updateProductAvailable(productId: number): Promise<void> {
     const productSaved = await this.findOne(productId);
     await this.prisma.product.update({
-      where: {productId},
-      data: {isActive: !productSaved.isActive} 
-    })
+      where: { productId },
+      data: { isActive: !productSaved.isActive },
+    });
   }
 
   async remove(productId: number) {
