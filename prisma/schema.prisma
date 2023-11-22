@@ -5,7 +5,6 @@ generator client {
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
-  directUrl = env("DIRECT_URL")
 }
 
 model User {
@@ -71,6 +70,7 @@ model OrderDetail {
   product   Product   @relation(fields: [productId], references: [productId])
   productId Int
   quantity  Int
+  price     Int
   order     Order     @relation(fields: [orderId], references: [orderId])
   orderId   Int
 
