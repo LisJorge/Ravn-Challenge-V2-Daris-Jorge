@@ -9,14 +9,17 @@ import {
   Param,
   Patch,
   Delete,
+  UseGuards,
 } from '@nestjs/common';
 import { CreateCartDto, UpdateCartDto } from '../dtos';
 import { CartDetail } from '@prisma/client';
 import { PaginationDto } from 'src/common/dto';
 import { CartsService } from '../services';
+import { JwtAuthGuard } from 'src/auth/guards';
 
-@Controller('products')
-export class ProductsController {
+@UseGuards(JwtAuthGuard)
+@Controller('carts')
+export class CartsController {
   constructor(private readonly cartsService: CartsService) {}
 
   @HttpCode(HttpStatus.CREATED)
