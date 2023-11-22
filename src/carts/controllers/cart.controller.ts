@@ -1,4 +1,15 @@
-import { Body, Controller, HttpCode, HttpStatus, Post, Get, Query, Param, Patch, Delete } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  HttpCode,
+  HttpStatus,
+  Post,
+  Get,
+  Query,
+  Param,
+  Patch,
+  Delete,
+} from '@nestjs/common';
 import { CreateCartDto, UpdateCartDto } from '../dtos';
 import { CartDetail } from '@prisma/client';
 import { PaginationDto } from 'src/common/dto';
@@ -15,13 +26,20 @@ export class ProductsController {
   }
 
   @Get()
-  async findtAll(@Query() pagination: PaginationDto, userId:number): Promise<CartDetail[]>{
+  async findtAll(
+    @Query() pagination: PaginationDto,
+    userId: number,
+  ): Promise<CartDetail[]> {
     return this.cartsService.findAll(pagination, userId);
   }
 
   @HttpCode(HttpStatus.NO_CONTENT)
   @Patch(':productId')
-  async update(@Param('productId') productId: number, @Body() UpdateCartDto: UpdateCartDto, userId: number) {
+  async update(
+    @Param('productId') productId: number,
+    @Body() UpdateCartDto: UpdateCartDto,
+    userId: number,
+  ) {
     return await this.cartsService.update(productId, userId, UpdateCartDto);
   }
 

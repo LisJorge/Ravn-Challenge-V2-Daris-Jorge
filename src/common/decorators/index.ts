@@ -1,1 +1,1 @@
-export * from './default-value.decorator'
+export * from './default-value.decorator';

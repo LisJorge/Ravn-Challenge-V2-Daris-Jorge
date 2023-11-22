@@ -15,17 +15,24 @@ export class CartsService {
   async findAll(filter: PaginationDto, userId: number): Promise<CartDetail[]> {
     const { skip, take } = filter;
     const queryFilter = {
-      userId
+      userId,
     };
     return this.prisma.cartDetail.findMany({
       skip,
       take,
-      where: queryFilter
+      where: queryFilter,
     });
   }
 
-  async update(productId: number, userId: number, updateCartDto: UpdateCartDto): Promise<void> {
-    await this.prisma.cartDetail.update({where: {productId_userId: {productId, userId}}, data: updateCartDto});
+  async update(
+    productId: number,
+    userId: number,
+    updateCartDto: UpdateCartDto,
+  ): Promise<void> {
+    await this.prisma.cartDetail.update({
+      where: { productId_userId: { productId, userId } },
+      data: updateCartDto,
+    });
   }
 
   async remove(productId: number, userId: number) {
@@ -33,8 +40,8 @@ export class CartsService {
       where: {
         productId_userId: {
           productId,
-          userId
-        }
+          userId,
+        },
       },
     });
     return {
