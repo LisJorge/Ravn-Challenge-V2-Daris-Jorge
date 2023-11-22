@@ -12,12 +12,14 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { CreateCartDto, UpdateCartDto } from '../dtos';
-import { CartDetail } from '@prisma/client';
+import { CartDetail, Role } from '@prisma/client';
 import { PaginationDto } from 'src/common/dto';
 import { CartsService } from '../services';
-import { JwtAuthGuard } from 'src/auth/guards';
+import { JwtAuthGuard, RolesGuard } from 'src/auth/guards';
+import { Roles } from 'src/auth/decorators';
 
-@UseGuards(JwtAuthGuard)
+@UseGuards(JwtAuthGuard, RolesGuard)
+@Roles(Role.CLIENT)
 @Controller('carts')
 export class CartsController {
   constructor(private readonly cartsService: CartsService) {}
@@ -29,7 +31,7 @@ export class CartsController {
   }
 
   @Get()
-  async findtAll(
+  async findAll(
     @Query() pagination: PaginationDto,
     userId: number,
   ): Promise<CartDetail[]> {

@@ -70,7 +70,7 @@ export class ProductsService {
     updateProductDto: UpdateProductDto,
   ): Promise<void> {
     const { categoryIds, ...productData } = updateProductDto;
-    const categories = categoryIds.length? categoryIds.map((categoryId) => ({categoryId})): null;
+    const categories = categoryIds && categoryIds.length? categoryIds.map((categoryId) => ({categoryId})): [];
     await this.findOne(productId);
     await this.prisma.product.update({
       where: { productId },
