@@ -56,13 +56,23 @@ export class ProductsService {
     productId: number,
     updateProductDto: UpdateProductDto,
   ): Promise<void> {
+    await this.findOne(productId);
     await this.prisma.product.update({
       where: { productId },
       data: updateProductDto,
     });
   }
 
+  async updateProductAvailable(productId: number): Promise<void> {
+    const productSaved = await this.findOne(productId);
+    await this.prisma.product.update({
+      where: {productId},
+      data: {isActive: !productSaved.isActive} 
+    })
+  }
+
   async remove(productId: number) {
+    await this.findOne(productId);
     const deleteTask = await this.prisma.product.delete({
       where: {
         productId,
