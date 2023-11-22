@@ -1,5 +1,4 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { User } from '@prisma/client';
 import { UsersService } from 'src/users/services';
 import { AuthUserDto, TokenPayloadDto } from '../dtos';
 import { JwtService } from '@nestjs/jwt';
