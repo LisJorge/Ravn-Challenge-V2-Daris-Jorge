@@ -6,7 +6,7 @@ export class ProductDto{
   productId: number;
 
   @Expose()
-  name: number;
+  name: string;
 
   @Expose()
   imageUrl: string;

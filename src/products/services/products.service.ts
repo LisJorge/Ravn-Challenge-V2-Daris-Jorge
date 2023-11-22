@@ -1,5 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { Prisma, Product } from '@prisma/client';
+import { Product } from '@prisma/client';
 import { PrismaService } from 'src/prisma/services/prisma.service';
 import {
   CreateProductDto,
@@ -7,7 +7,6 @@ import {
   ProductDto,
   UpdateProductDto,
 } from '../dtos';
-import { CategoriesService } from 'src/categories/services';
 import { createPaginator } from 'prisma-pagination';
 import { PaginatedOutputDto } from 'src/common/dto';
 
@@ -15,7 +14,6 @@ import { PaginatedOutputDto } from 'src/common/dto';
 export class ProductsService {
   constructor(
     private prisma: PrismaService,
-    private categoriesService: CategoriesService,
   ) {}
 
   async create(createProductDto: CreateProductDto): Promise<Product> {

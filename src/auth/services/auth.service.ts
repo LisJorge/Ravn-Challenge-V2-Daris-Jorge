@@ -1,6 +1,6 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { UsersService } from 'src/users/services';
-import { AuthUserDto, SignUpUserDto, TokenPayloadDto } from '../dtos';
+import { AuthResponseDto, AuthUserDto, SignUpUserDto, TokenPayloadDto } from '../dtos';
 import { JwtService } from '@nestjs/jwt';
 import { checkPassword, encodePassword } from '../utils';
 import { Role } from '@prisma/client';
@@ -37,7 +37,7 @@ export class AuthService {
     };
   }
 
-  async signUp(signUpUseDto: SignUpUserDto): Promise<any>{
+  async signUp(signUpUseDto: SignUpUserDto): Promise<AuthResponseDto>{
     const {password, ...userData} = signUpUseDto;
     const hashedPassword = await encodePassword(password);
     const defaultRole = Role.CLIENT;

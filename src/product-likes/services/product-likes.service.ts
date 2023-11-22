@@ -24,8 +24,12 @@ export class ProductLikesService {
   }
   async remove(productLikeDto: ProductLikeDto) {
     await this.findOne(productLikeDto);
-    const deleteTask = await this.prisma.product.delete({
-      where: productLikeDto});
+    const deleteTask = await this.prisma.productLike.delete({
+      where: {
+        productId_userId: {
+          ...productLikeDto
+        }
+      }});
     return {
       data: deleteTask,
       message: `Success delete like from ${productLikeDto.productId}`,

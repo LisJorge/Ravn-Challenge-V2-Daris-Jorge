@@ -4,26 +4,36 @@ import {
   HttpStatus,
   Post,
   Get,
-  Patch,
-  Param,
   Body,
   Query,
+  UseGuards,
 } from '@nestjs/common';
 import { OrdersService } from '../services';
 import { CreateOrderDto, GetAllOrdersDto, UpdateOrderDto } from '../dtos';
-import { Order } from '@prisma/client';
+import { Order, Role } from '@prisma/client';
+import { ApiResponse, ApiTags } from '@nestjs/swagger';
+import { JwtAuthGuard, RolesGuard } from 'src/auth/guards';
+import { Roles } from 'src/auth/decorators';
+import { CREATED_RESPONSE, FORBIDDEN_RESPONSE, GENERAL_RESPONSE, UNAUTHORIZED_RESPONSE } from 'src/common/api-responses';
 
+@UseGuards(JwtAuthGuard, RolesGuard)
+@ApiTags('Orders')
 @Controller('orders')
 export class OrdersController {
   constructor(private readonly ordersService: OrdersService) {}
 
   @HttpCode(HttpStatus.CREATED)
   @Post()
+  @Roles(Role.MANAGER)
+  @ApiResponse(CREATED_RESPONSE)
+  @ApiResponse(UNAUTHORIZED_RESPONSE)
+  @ApiResponse(FORBIDDEN_RESPONSE)
   async create(@Body() createOrderDto: CreateOrderDto): Promise<Order> {
     return this.ordersService.create(createOrderDto);
   }
 
   @Get()
+  @ApiResponse(GENERAL_RESPONSE)
   async findAll(@Query() filter: GetAllOrdersDto): Promise<Order[]> {
     return this.ordersService.findAll(filter);
   }
