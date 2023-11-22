@@ -16,6 +16,7 @@ export class AuthService {
     const {password: dbPassword, ...userData} = user;
     if(user){
       const passwordMatch = await checkPassword(dbPassword, password);
+      console.log(passwordMatch)
       if(passwordMatch){
         return userData;
       } else {
