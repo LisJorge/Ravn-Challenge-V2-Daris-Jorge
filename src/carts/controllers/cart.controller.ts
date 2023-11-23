@@ -5,7 +5,6 @@ import {
   HttpStatus,
   Post,
   Get,
-  Query,
   Param,
   Patch,
   Delete,
@@ -13,18 +12,11 @@ import {
 } from '@nestjs/common';
 import { CreateCartDto, UpdateCartDto } from '../dtos';
 import { CartDetail, Role } from '@prisma/client';
-import { PaginationDto } from 'src/common/dto';
 import { CartsService } from '../services';
-import { JwtAuthGuard, RolesGuard } from 'src/auth/guards';
-import { Roles } from 'src/auth/decorators';
 import { ApiResponse, ApiTags } from '@nestjs/swagger';
-import {
-  CREATED_RESPONSE,
-  FORBIDDEN_RESPONSE,
-  GENERAL_RESPONSE,
-  UNAUTHORIZED_RESPONSE,
-  UPDATE_RESPONSE,
-} from 'src/common/api-responses';
+import { JwtAuthGuard, RolesGuard } from '@/auth/guards';
+import { Roles } from '@/auth/decorators';
+import { CREATED_RESPONSE, FORBIDDEN_RESPONSE, GENERAL_RESPONSE, UNAUTHORIZED_RESPONSE, UPDATE_RESPONSE } from '@/common/api-responses';
 
 @UseGuards(JwtAuthGuard, RolesGuard)
 @ApiTags('Carts')
@@ -45,10 +37,9 @@ export class CartsController {
   @Get()
   @ApiResponse(GENERAL_RESPONSE)
   async findAll(
-    @Query() pagination: PaginationDto,
     userId: number,
   ): Promise<CartDetail[]> {
-    return this.cartsService.findAll(pagination, userId);
+    return this.cartsService.findAll(userId);
   }
 
   @HttpCode(HttpStatus.NO_CONTENT)

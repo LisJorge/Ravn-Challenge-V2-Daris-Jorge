@@ -81,6 +81,16 @@
       "**/*.(t|j)s"
     ],
     "coverageDirectory": "../coverage",
-    "testEnvironment": "node"
+    "testEnvironment": "node",
+    "moduleNameMapper": {
+      "^@/(.*)$": "<rootDir>/../src/$1",
+      "^@auth/(.*)$": ["<rootDir>/../src/auth/$1"],
+      "^@carts/(.*)$": ["<rootDir>/../src/carts/$1"],
+      "^@common/(.*)$": ["<rootDir>/../src/common/$1"],
+      "^@orders/(.*)$": ["<rootDir>/../src/prisma/$1"],
+      "^@productLikes/(.*)$": ["<rootDir>/../src/product-likes/$1"],
+      "^@products/(.*)$": ["<rootDir>/../src/product/$1"],
+      "^@users/(.*)$": ["<rootDir>/../src/users/$1"]
+    }
   }
 }

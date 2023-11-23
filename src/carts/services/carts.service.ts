@@ -1,8 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { CartDetail } from '@prisma/client';
-import { PrismaService } from 'src/prisma/services';
+import { PrismaService } from '@/prisma/services';
 import { CreateCartDto, UpdateCartDto } from '../dtos';
-import { PaginationDto } from 'src/common/dto';
 
 @Injectable()
 export class CartsService {
@@ -12,14 +11,11 @@ export class CartsService {
     return this.prisma.cartDetail.create({ data: createCartDto });
   }
 
-  async findAll(filter: PaginationDto, userId: number): Promise<CartDetail[]> {
-    const { page, perPage } = filter;
+  async findAll(userId: number): Promise<CartDetail[]> {
     const queryFilter = {
       userId,
     };
     return this.prisma.cartDetail.findMany({
-      skip: page - 1,
-      take: perPage,
       where: queryFilter,
     });
   }

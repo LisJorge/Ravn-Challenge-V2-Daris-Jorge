@@ -16,6 +16,16 @@
     "noImplicitAny": false,
     "strictBindCallApply": false,
     "forceConsistentCasingInFileNames": false,
-    "noFallthroughCasesInSwitch": false
+    "noFallthroughCasesInSwitch": false,
+    "paths": {
+      "@/*": ["src/*"],
+      "@auth/*": ["src/auth/*"],
+      "@carts/*": ["src/carts/*"],
+      "@common/*": ["src/common/*"],
+      "@orders/*": ["src/prisma/*"],
+      "@productLikes/*": ["src/product-likes/*"],
+      "@products/*": ["src/product/*"],
+      "@users/*": ["src/users/*"],
+    }
   }
 }

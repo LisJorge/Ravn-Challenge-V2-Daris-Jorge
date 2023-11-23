@@ -9,11 +9,16 @@ import {
 } from '@nestjs/common';
 import { ProductLikesService } from '../services';
 import { ApiResponse, ApiTags } from '@nestjs/swagger';
-import { Roles } from 'src/auth/decorators';
 import { ProductLike, Role } from '@prisma/client';
-import { RolesGuard } from 'src/auth/guards';
 import { ProductLikeDto } from '../dtos';
-import { CREATED_RESPONSE, FORBIDDEN_RESPONSE, GENERAL_RESPONSE, UNAUTHORIZED_RESPONSE } from 'src/common/api-responses';
+import { RolesGuard } from '@/auth/guards';
+import { Roles } from '@/auth/decorators';
+import {
+  CREATED_RESPONSE,
+  FORBIDDEN_RESPONSE,
+  GENERAL_RESPONSE,
+  UNAUTHORIZED_RESPONSE,
+} from '@/common/api-responses';
 
 @ApiTags('Product-Likes')
 @Roles(Role.CLIENT)
