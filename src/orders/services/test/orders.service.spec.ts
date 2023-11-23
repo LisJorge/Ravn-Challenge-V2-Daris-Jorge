@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { OrdersService } from './orders.service';
+import { OrdersService } from '../orders.service';
 import { PrismaService } from '@/prisma/services';
-import { CreateOrderDto } from '../dtos';
+import { CreateOrderDto } from '../../dtos';
 
 describe('OrdersService', () => {
   let service: OrdersService;
@@ -53,7 +53,7 @@ describe('OrdersService', () => {
   });
 
   describe('findAll', () => {
-    it('should return orders array', async () => {
+    it('should call prisma findMany method', async () => {
       mockPrisma.order.findMany.mockImplementation(() => ([createOrderDto]));
       const request = await service.findAll({});
       expect(mockPrisma.order.findMany).toHaveBeenCalled();

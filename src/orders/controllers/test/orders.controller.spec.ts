@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { OrdersController } from './orders.controller';
-import { OrdersService } from '../services';
-import { CreateOrderDto } from '../dtos';
+import { OrdersController } from '../orders.controller';
+import { OrdersService } from '../../services';
+import { CreateOrderDto } from '../../dtos';
 
 describe('OrdersController', () => {
   let controller: OrdersController;
@@ -39,14 +39,14 @@ describe('OrdersController', () => {
   });
 
   describe('create', () => {
-    it('should return a new order', async () => {
+    it('should call create method', async () => {
       await controller.create(createOrderDto);
       expect(mockService.create).toHaveBeenCalled();
     });
   });
 
   describe('findAll', () => {
-    it('should return orders array', async () => {
+    it('should call findAll method', async () => {
       await controller.findAll({});
       expect(mockService.findAll).toHaveBeenCalled();
     });
