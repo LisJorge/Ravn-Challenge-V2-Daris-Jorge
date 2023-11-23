@@ -16,6 +16,7 @@
     "test": "jest",
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
+    "test:summary": " jest --coverage --coverageReporters='text-summary'",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
     "seed": "ts-node prisma/seed.ts"
@@ -81,17 +82,17 @@
       "**/*.(t|j)s"
     ],
     "coverageDirectory": "../coverage",
-    "coveragePathIgnorePatterns": [".module.ts", ".dto.ts"],
+    "coveragePathIgnorePatterns": [".module.ts", ".dto.ts", "decorator.ts", "strategy.ts", "utils.ts", "index.ts"],
     "testEnvironment": "node",
     "moduleNameMapper": {
-      "^@/(.*)$": "<rootDir>/../src/$1",
-      "^@auth/(.*)$": ["<rootDir>/../src/auth/$1"],
-      "^@carts/(.*)$": ["<rootDir>/../src/carts/$1"],
-      "^@common/(.*)$": ["<rootDir>/../src/common/$1"],
-      "^@orders/(.*)$": ["<rootDir>/../src/prisma/$1"],
-      "^@productLikes/(.*)$": ["<rootDir>/../src/product-likes/$1"],
-      "^@products/(.*)$": ["<rootDir>/../src/product/$1"],
-      "^@users/(.*)$": ["<rootDir>/../src/users/$1"]
+      "^@/(.*)$": "<rootDir>/$1",
+      "^@auth/(.*)$": ["<rootDir>/auth/$1"],
+      "^@carts/(.*)$": ["<rootDir>/carts/$1"],
+      "^@common/(.*)$": ["<rootDir>/common/$1"],
+      "^@orders/(.*)$": ["<rootDir>/prisma/$1"],
+      "^@productLikes/(.*)$": ["<rootDir>/product-likes/$1"],
+      "^@products/(.*)$": ["<rootDir>/product/$1"],
+      "^@users/(.*)$": ["<rootDir>/users/$1"]
     }
   }
 }
