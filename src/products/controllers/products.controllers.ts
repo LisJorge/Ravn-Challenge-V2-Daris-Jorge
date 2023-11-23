@@ -11,7 +11,6 @@ import {
   Delete,
   UseGuards,
 } from '@nestjs/common';
-import { ProductsService } from '../services/products.service';
 import {
   CreateProductDto,
   GetAllProductsDto,
@@ -19,18 +18,13 @@ import {
   UpdateProductDto,
 } from '../dtos';
 import { Product, Role } from '@prisma/client';
-import { JwtAuthGuard, RolesGuard } from 'src/auth/guards';
-import { Public, Roles } from 'src/auth/decorators';
-import { ApiPaginatedResponse } from 'src/common/decorators';
-import { PaginatedOutputDto } from 'src/common/dto';
 import { ApiResponse, ApiTags } from '@nestjs/swagger';
-import {
-  CREATED_RESPONSE,
-  FORBIDDEN_RESPONSE,
-  GENERAL_RESPONSE,
-  UNAUTHORIZED_RESPONSE,
-  UPDATE_RESPONSE,
-} from 'src/common/api-responses';
+import { JwtAuthGuard, RolesGuard } from '@/auth/guards';
+import { Roles, Public } from '@/auth/decorators';
+import { CREATED_RESPONSE, FORBIDDEN_RESPONSE, GENERAL_RESPONSE, UNAUTHORIZED_RESPONSE, UPDATE_RESPONSE } from '@/common/api-responses';
+import { ApiPaginatedResponse } from '@/common/decorators';
+import { PaginatedOutputDto } from '@/common/dto';
+import { ProductsService } from '../services';
 
 @UseGuards(JwtAuthGuard, RolesGuard)
 @ApiTags('Products')

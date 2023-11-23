@@ -55,9 +55,19 @@ describe('UsersService', () => {
 
   describe('findOneByEmail', () => {
     it('should call prisma findMany method', async () => {
-      const {email, password} = mockUser;
+      const {email} = mockUser;
       await service.findOneByEmail(email);
       expect(mockPrisma.user.findFirstOrThrow).toHaveBeenCalled();
+    });
+
+    it('should throw an exception', async () => {
+      const {email} = mockUser;
+      mockPrisma.user.findFirstOrThrow.mockImplementationOnce(() => {throw new Error('')})
+      try {
+        await service.findOneByEmail(email); 
+      } catch (e) {
+        expect(e.message).toEqual('User not found') 
+      }
     });
   })
 });

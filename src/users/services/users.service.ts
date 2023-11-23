@@ -9,9 +9,6 @@ import { encodePassword } from '@/auth/utils';
 
 @Injectable()
 export class UsersService {
-  findOne(username: string) {
-    throw new Error('Method not implemented.');
-  }
   constructor(
     private prisma: PrismaService,
   ) {}
