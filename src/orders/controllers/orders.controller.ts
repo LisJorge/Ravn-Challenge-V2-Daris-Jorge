@@ -9,12 +9,12 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { OrdersService } from '../services';
-import { CreateOrderDto, GetAllOrdersDto, UpdateOrderDto } from '../dtos';
+import { CreateOrderDto, GetAllOrdersDto} from '../dtos';
 import { Order, Role } from '@prisma/client';
 import { ApiResponse, ApiTags } from '@nestjs/swagger';
-import { JwtAuthGuard, RolesGuard } from 'src/auth/guards';
-import { Roles } from 'src/auth/decorators';
-import { CREATED_RESPONSE, FORBIDDEN_RESPONSE, GENERAL_RESPONSE, UNAUTHORIZED_RESPONSE } from 'src/common/api-responses';
+import { CREATED_RESPONSE, FORBIDDEN_RESPONSE, GENERAL_RESPONSE, UNAUTHORIZED_RESPONSE } from '@common/api-responses';
+import { JwtAuthGuard, RolesGuard } from '@/auth/guards';
+import { Roles } from '@/auth/decorators';
 
 @UseGuards(JwtAuthGuard, RolesGuard)
 @ApiTags('Orders')
