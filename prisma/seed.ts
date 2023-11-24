@@ -1,20 +1,12 @@
 import { PrismaClient } from '@prisma/client';
-import { USERS_SEED } from './seeders';
+import { CATEGORIES_SEED, USERS_SEED } from './seeders';
 
 const prisma = new PrismaClient();
 
 async function main() {
   console.log('Seeding...');
-  const categories = [
-    {
-      name: 'FOOD',
-    },
-    {
-      name: 'TOY',
-    },
-  ];
   const categorySeeding = await Promise.all(
-    categories.map((category) =>
+    CATEGORIES_SEED.map((category) =>
       prisma.category.upsert({
         where: { name: category.name },
         update: {},

@@ -1,8 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { PrismaService } from '@/prisma/services';
-import { Role, User } from '@prisma/client';
+import { Role } from '@prisma/client';
 import { UsersService } from '../users.service';
-import * as utils from '@auth/utils';
 
 const bcrypt = require('../../../auth/utils');
  
@@ -12,9 +11,10 @@ describe('UsersService', () => {
     user: {
       findFirstOrThrow: jest.fn(),
       create: jest.fn(),
+      update: jest.fn(),
     }
   }
-  const mockUser: User = {
+  const mockUser = {
     userId: 1,
     email: 'email@example.com',
     name: 'John',
@@ -22,6 +22,7 @@ describe('UsersService', () => {
     password: 'pass',
     role: Role.MANAGER,
   }
+  const mockToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiQ0xJRU5UIiwic3ViIjoyLCJpYXQiOjE3MDA3NzMxNjAsImV4cC';
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -54,7 +55,7 @@ describe('UsersService', () => {
   });
 
   describe('findOneByEmail', () => {
-    it('should call prisma findMany method', async () => {
+    it('should call prisma findFirstOrThrow method', async () => {
       const {email} = mockUser;
       await service.findOneByEmail(email);
       expect(mockPrisma.user.findFirstOrThrow).toHaveBeenCalled();
@@ -68,6 +69,52 @@ describe('UsersService', () => {
       } catch (e) {
         expect(e.message).toEqual('User not found') 
       }
+    });
+  })
+
+  describe('findOneById', () => {
+    it('should call prisma findFirstOrThrow method', async () => {
+      const {userId} = mockUser;
+      await service.findOneById(userId);
+      expect(mockPrisma.user.findFirstOrThrow).toHaveBeenCalled();
+    });
+
+    it('should throw an exception', async () => {
+      const {userId} = mockUser;
+      mockPrisma.user.findFirstOrThrow.mockImplementationOnce(() => {throw new Error('')})
+      try {
+        await service.findOneById(userId); 
+      } catch (e) {
+        expect(e.message).toEqual('User not found') 
+      }
+    });
+  })
+
+  describe('refreshToken', () => {
+    it('save refreshToken', async () => {
+      const {userId} = mockUser;
+      await service.saveRefreshToken(userId, mockToken);
+      expect(mockPrisma.user.update).toHaveBeenCalled();
+    });
+
+    it('delete refreshToken', async () => {
+      const {userId} = mockUser;
+      await service.removeRefreshToken(userId);
+      expect(mockPrisma.user.update).toHaveBeenCalled();
+    });
+  })
+
+  describe('passwordToken', () => {
+    it('save passwordToken', async () => {
+      const {userId} = mockUser;
+      await service.savePasswordToken(userId, mockToken);
+      expect(mockPrisma.user.update).toHaveBeenCalled();
+    });
+
+    it('delete passwordToken', async () => {
+      const {userId} = mockUser;
+      await service.removePasswordToken(userId);
+      expect(mockPrisma.user.update).toHaveBeenCalled();
     });
   })
 });

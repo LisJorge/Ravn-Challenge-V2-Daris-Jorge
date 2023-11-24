@@ -26,6 +26,7 @@
       "@productLikes/*": ["src/product-likes/*"],
       "@products/*": ["src/product/*"],
       "@users/*": ["src/users/*"],
+      "@mail/*": ["src/mail/*"],
     }
   }
 }
