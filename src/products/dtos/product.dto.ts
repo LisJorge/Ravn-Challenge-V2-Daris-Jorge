@@ -16,4 +16,7 @@ export class ProductDto{
 
   @Expose()
   description: string;
+
+  @Expose()
+  stock: number;
 }
