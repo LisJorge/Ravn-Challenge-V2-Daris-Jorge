@@ -4,27 +4,38 @@ import { UsersService } from '@/users/services';
 import { JwtService } from '@nestjs/jwt';
 import { Role } from '@prisma/client';
 import { AuthResponseDto } from '@/auth/dtos';
+import { ConfigService } from '@nestjs/config';
+import { MailService } from '@/mail/services/mail.service';
 
 describe('AuthService', () => {
   let service: AuthService;
   const mockUserService = {
     findOneByEmail: jest.fn(),
     create: jest.fn(),
-  }
+    saveRefreshToken: jest.fn(),
+  };
   const mockJwtService = {
-    sign: jest.fn(() => '')
-  }
+    sign: jest.fn(() => ''),
+    signAsync: jest.fn(() => ''),
+  };
+  const mockMailService = {
+    sendPasswordResetConfirmation: jest.fn(),
+  };
+  const mockConfigService = {
+    get: jest.fn(() => ''),
+  };
 
   const mockUser = {
     email: 'email@example.com',
     password: '',
     role: Role.CLIENT,
     userId: 1,
-  }
+  };
 
   const mockAuthResponse: AuthResponseDto = {
-    access_token :''
-  }
+    access_token: '',
+    refresh_token: '',
+  };
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -37,7 +48,15 @@ describe('AuthService', () => {
         {
           provide: JwtService,
           useValue: mockJwtService,
-        }
+        },
+        {
+          provide: ConfigService,
+          useValue: mockConfigService,
+        },
+        {
+          provide: MailService,
+          useValue: mockMailService,
+        },
       ],
     }).compile();
 
@@ -46,36 +65,39 @@ describe('AuthService', () => {
 
   describe('generateJwt', () => {
     it('should return access token', async () => {
-      const request = service.generateJwt(mockUser);
-      expect(request).toEqual(mockAuthResponse)
+      const request = await service.generateJwt(mockUser);
+      expect(request).toEqual(mockAuthResponse);
     });
   });
 
   describe('signUp', () => {
     it('should return access token', async () => {
-      jest.spyOn(service, 'encodePassword').mockImplementation(async () => {return ''})
-      mockUserService.create.mockImplementationOnce(() => ({userId: 1}))
+      jest.spyOn(service, 'encodePassword').mockImplementation(async () => {
+        return '';
+      });
+      mockUserService.create.mockImplementationOnce(() => ({ userId: 1 }));
       const createUserMock = {
         ...mockUser,
         name: 'name',
-        lastname: 'lastname'
-      }
+        lastname: 'lastname',
+      };
       const request = await service.signUp(createUserMock);
-      expect(request).toEqual(mockAuthResponse)
+      expect(request).toEqual(mockAuthResponse);
     });
   });
 
   describe('validate user', () => {
     it('should return user', async () => {
-      const {email} = mockUser;
-      const {password, ...userData} = mockUser;
-      jest.spyOn(service, 'checkPassword' ).mockImplementationOnce(async () => {return true});
+      const { email } = mockUser;
+      const { password, ...userData } = mockUser;
+      jest.spyOn(service, 'checkPassword').mockImplementationOnce(async () => {
+        return true;
+      });
       mockUserService.findOneByEmail.mockImplementationOnce(() => {
-        return {...mockUser,
-        password: ''}
-      })
+        return { ...mockUser, password: '' };
+      });
       const request = await service.validateUser(email, password);
-      expect(request).toEqual(userData)
+      expect(request).toEqual(userData);
     });
   });
 });

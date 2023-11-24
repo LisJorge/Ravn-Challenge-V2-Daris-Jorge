@@ -12,6 +12,7 @@ describe('UsersService', () => {
       findFirstOrThrow: jest.fn(),
       create: jest.fn(),
       update: jest.fn(),
+      findFirst: jest.fn(),
     }
   }
   const mockUser = {
@@ -58,22 +59,12 @@ describe('UsersService', () => {
     it('should call prisma findFirstOrThrow method', async () => {
       const {email} = mockUser;
       await service.findOneByEmail(email);
-      expect(mockPrisma.user.findFirstOrThrow).toHaveBeenCalled();
-    });
-
-    it('should throw an exception', async () => {
-      const {email} = mockUser;
-      mockPrisma.user.findFirstOrThrow.mockImplementationOnce(() => {throw new Error('')})
-      try {
-        await service.findOneByEmail(email); 
-      } catch (e) {
-        expect(e.message).toEqual('User not found') 
-      }
+      expect(mockPrisma.user.findFirst).toHaveBeenCalled();
     });
   })
 
   describe('findOneById', () => {
-    it('should call prisma findFirstOrThrow method', async () => {
+    it('should call prisma findFirst method', async () => {
       const {userId} = mockUser;
       await service.findOneById(userId);
       expect(mockPrisma.user.findFirstOrThrow).toHaveBeenCalled();
@@ -112,8 +103,8 @@ describe('UsersService', () => {
     });
 
     it('delete passwordToken', async () => {
-      const {userId} = mockUser;
-      await service.removePasswordToken(userId);
+      const {userId, password} = mockUser;
+      await service.removePasswordToken(userId, password);
       expect(mockPrisma.user.update).toHaveBeenCalled();
     });
   })
