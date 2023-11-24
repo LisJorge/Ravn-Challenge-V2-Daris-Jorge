@@ -1,7 +1,7 @@
 import { Body, Controller, Get, Post, Req, UseGuards } from '@nestjs/common';
 import { AuthService } from '../services';
 import { Request } from 'express';
-import { AuthUserDto, SignUpUserDto } from '../dtos';
+import { AuthUserDto, ForgotPasswordDto, SignUpUserDto } from '../dtos';
 import { AuthGuard } from '@nestjs/passport';
 import { Public } from '../decorators';
 import { ApiResponse, ApiTags } from '@nestjs/swagger';
@@ -11,6 +11,7 @@ import {
   UNAUTHORIZED_RESPONSE,
 } from 'src/common/api-responses';
 import { JwtAuthGuard, RefreshTokenGuard } from '../guards';
+import { ResetPasswordDto } from '../dtos/reset-password.dto';
 
 @Public()
 @ApiTags('Auth')
@@ -27,13 +28,13 @@ export class AuthController {
     return this.authService.generateJwt(user);
   }
 
-  @Post('signUp')
+  @Post('sign-up')
   @ApiResponse(GENERAL_RESPONSE)
   signUp(@Body() signUpUserDto: SignUpUserDto): Promise<AuthResponseDto> {
     return this.authService.signUp(signUpUserDto);
   }
 
-  @Post('signOut')
+  @Post('sign-out')
   @UseGuards(JwtAuthGuard)
   logout(@Req() req: Request): Promise<void> {
     return this.authService.signOut(req.user['sub']);
@@ -45,5 +46,18 @@ export class AuthController {
     const userId = req.user['sub'];
     const refreshToken = req.user['refreshToken'];
     return this.authService.refreshTokens(userId, refreshToken);
+  }
+
+  @Post('forgot-password')
+  //@UseGuards(JwtAuthGuard)
+  forgotPassword(@Body() forgotPasswordDto: ForgotPasswordDto ): Promise<string> {
+    const {email} = forgotPasswordDto;
+    return this.authService.forgotPassword(email);
+  }
+
+  @Post('reset-password')
+  resetPassword(@Body() resetPasswordDto: ResetPasswordDto): Promise<void> {
+    const { token, password } = resetPasswordDto;
+    return this.authService.resetPassword(token, password);
   }
 }

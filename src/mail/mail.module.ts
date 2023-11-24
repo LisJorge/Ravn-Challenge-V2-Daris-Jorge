@@ -10,11 +10,11 @@ import { MailService } from './services/mail.service';
       // transport: 'smtps://user@example.com:topsecret@smtp.example.com',
       // or
       transport: {
-        host: 'smtp.example.com',
+        host: 'smtp.gmail.com',
         secure: false,
         auth: {
-          user: 'user@example.com',
-          pass: 'topsecret',
+          user: 'cattinystore@gmail.com',
+          pass: 'aggiymebhfzooymx',
         },
       },
       defaults: {

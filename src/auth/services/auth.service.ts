@@ -1,4 +1,4 @@
-import { BadRequestException, ForbiddenException, Injectable } from '@nestjs/common';
+import { BadRequestException, ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import {
   AuthResponseDto,
   AuthUserDto,
@@ -10,6 +10,7 @@ import { checkPassword, encodePassword } from '../utils';
 import { Role } from '@prisma/client';
 import { UsersService } from '@/users/services';
 import { ConfigService } from '@nestjs/config';
+import { MailService } from '@/mail/services/mail.service';
 
 @Injectable()
 export class AuthService {
@@ -17,6 +18,7 @@ export class AuthService {
     private usersService: UsersService,
     private jwtService: JwtService,
     private configService: ConfigService,
+    private mailService: MailService,
   ) {}
 
   async encodePassword(password: string): Promise<string> {
@@ -45,6 +47,16 @@ export class AuthService {
       access_token,
       refresh_token,
     };
+  }
+
+  async getForgotPasswordToken(email: string): Promise<string> {
+    return this.jwtService.signAsync(
+      {email},
+      {
+        secret: this.configService.get<string>('JWT_FORGOT_PASSWORD_SECRET'),
+        expiresIn: '20m',
+      },
+    )
   }
 
   async validateUser(username: string, password: string): Promise<any> {
@@ -121,9 +133,30 @@ export class AuthService {
     await this.usersService.removeRefreshToken(userId);
   }
 
-  async forgotPassword(email: string): Promise<void> {
+  async forgotPassword(email: string): Promise<string> {
     const user = await this.usersService.findOneByEmail(email);
+    if(user){
+      const {userId} = user;
+      const token = await this.getForgotPasswordToken(email);
+      await this.usersService.savePasswordToken(userId, token);
+      return token;
+    }
+    throw new NotFoundException('User does not exist');
   }
 
-  async resetPassword(token: string){}
+  async resetPassword(token: string, newPassword: string){
+    const { email } = await this.jwtService.decode(token);
+    const hashedPassword = await this.encodePassword(newPassword);
+    const user = await this.usersService.findOneByEmail(email);
+    const tokenIsValid = token === user.passwordToken;
+    if(user &&  tokenIsValid ){
+      const { userId } = user;
+      await Promise.all([
+        this.usersService.removePasswordToken(userId, hashedPassword),
+        this.mailService.sendPasswordResetConfirmation(user)
+      ])
+    } else {
+      throw new BadRequestException('Invalid information');
+    }
+  }
 }

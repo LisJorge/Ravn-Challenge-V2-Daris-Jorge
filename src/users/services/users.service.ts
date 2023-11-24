@@ -30,7 +30,7 @@ export class UsersService {
     }
   }
 
-  async findOneByEmail(email: string): Promise<User | null > {
+  async findOneByEmail(email: string): Promise<User | null> {
     const user = await this.prisma.user.findFirst({
       where: { email },
     });
@@ -58,10 +58,16 @@ export class UsersService {
     });
   }
 
-  async removePasswordToken(userId: number): Promise<void> {
+  async removePasswordToken(
+    userId: number,
+    newPassword: string,
+  ): Promise<void> {
     await this.prisma.user.update({
       where: { userId },
-      data: { passwordToken: null },
+      data: { 
+        passwordToken: null, 
+        password: newPassword 
+      },
     });
   }
 }
