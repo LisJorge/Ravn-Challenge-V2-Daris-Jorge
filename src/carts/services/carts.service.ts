@@ -1,14 +1,23 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { CartDetail } from '@prisma/client';
 import { PrismaService } from '@/prisma/services';
 import { CreateCartDto, UpdateCartDto } from '../dtos';
+import { ProductsService } from '@/products/services';
 
 @Injectable()
 export class CartsService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private productsService: ProductsService,
+  ) {}
 
   async create(createCartDto: CreateCartDto): Promise<CartDetail> {
-    return this.prisma.cartDetail.create({ data: createCartDto });
+    const { productId, quantity } = createCartDto;
+    const { stock } = await this.productsService.findOne(productId);
+    if (stock >= quantity) {
+      return await this.prisma.cartDetail.create({ data: createCartDto });
+    }
+    throw new BadRequestException('Not enough products in stock');
   }
 
   async findAll(userId: number): Promise<CartDetail[]> {
@@ -25,10 +34,15 @@ export class CartsService {
     userId: number,
     updateCartDto: UpdateCartDto,
   ): Promise<void> {
-    await this.prisma.cartDetail.update({
-      where: { productId_userId: { productId, userId } },
-      data: updateCartDto,
-    });
+    const { quantity } = updateCartDto;
+    const { stock } = await this.productsService.findOne(productId);
+    if (stock >= quantity) {
+      await this.prisma.cartDetail.update({
+        where: { productId_userId: { productId, userId } },
+        data: updateCartDto,
+      });
+    }
+    throw new BadRequestException('Not enough products in stock');
   }
 
   async remove(productId: number, userId: number) {
