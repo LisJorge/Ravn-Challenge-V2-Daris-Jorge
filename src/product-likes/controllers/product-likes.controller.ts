@@ -19,6 +19,7 @@ import {
   GENERAL_RESPONSE,
   UNAUTHORIZED_RESPONSE,
 } from '@/common/api-responses';
+import { CurrentUser } from '@/common/decorators';
 
 @ApiTags('Product-Likes')
 @Roles(Role.CLIENT)
@@ -32,15 +33,15 @@ export class ProductLikesController {
   @ApiResponse(CREATED_RESPONSE)
   @ApiResponse(UNAUTHORIZED_RESPONSE)
   @ApiResponse(FORBIDDEN_RESPONSE)
-  async create(@Body() productLikeDto: ProductLikeDto): Promise<ProductLike> {
-    return this.productLikesService.create(productLikeDto);
+  async create(@Body() productLikeDto: ProductLikeDto, @CurrentUser('sub') userId: number): Promise<ProductLike> {
+    return this.productLikesService.create(productLikeDto, userId);
   }
 
   @Delete()
   @ApiResponse(GENERAL_RESPONSE)
   @ApiResponse(UNAUTHORIZED_RESPONSE)
   @ApiResponse(FORBIDDEN_RESPONSE)
-  async remove(@Body() productLikeDto: ProductLikeDto) {
-    return this.productLikesService.remove(productLikeDto);
+  async remove(@Body() productLikeDto: ProductLikeDto, @CurrentUser('sub') userId: number) {
+    return this.productLikesService.remove(productLikeDto, userId);
   }
 }

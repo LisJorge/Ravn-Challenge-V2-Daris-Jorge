@@ -16,7 +16,15 @@ import { CartsService } from '../services';
 import { ApiResponse, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard, RolesGuard } from '@/auth/guards';
 import { Roles } from '@/auth/decorators';
-import { CREATED_RESPONSE, FORBIDDEN_RESPONSE, GENERAL_RESPONSE, UNAUTHORIZED_RESPONSE, UPDATE_RESPONSE } from '@/common/api-responses';
+import {
+  CREATED_RESPONSE,
+  FORBIDDEN_RESPONSE,
+  GENERAL_RESPONSE,
+  UNAUTHORIZED_RESPONSE,
+  UPDATE_RESPONSE,
+} from '@/common/api-responses';
+import { CurrentUser } from '@/common/decorators';
+import { CurrentUserDto } from '@/common/dto/current-user.dto';
 
 @UseGuards(JwtAuthGuard, RolesGuard)
 @ApiTags('Carts')
@@ -36,9 +44,7 @@ export class CartsController {
 
   @Get()
   @ApiResponse(GENERAL_RESPONSE)
-  async findAll(
-    userId: number,
-  ): Promise<CartDetail[]> {
+  async findAll(@CurrentUser('sub') userId: number): Promise<CartDetail[]> {
     return this.cartsService.findAll(userId);
   }
 
@@ -48,14 +54,17 @@ export class CartsController {
   async update(
     @Param('productId') productId: number,
     @Body() UpdateCartDto: UpdateCartDto,
-    userId: number,
+    @CurrentUser('sub') userId: number,
   ) {
     return await this.cartsService.update(productId, userId, UpdateCartDto);
   }
 
   @ApiResponse(GENERAL_RESPONSE)
   @Delete(':productId')
-  async remove(@Param('productId') productId: number, userId: number) {
+  async remove(
+    @Param('productId') productId: number,
+    @CurrentUser('sub') userId: number,
+  ) {
     return await this.cartsService.remove(productId, userId);
   }
 }

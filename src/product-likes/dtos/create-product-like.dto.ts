@@ -10,13 +10,4 @@ export class ProductLikeDto {
   @IsNumber()
   @IsInt()
   productId: number;
-
-  @ApiProperty({
-    example: 1,
-    required: true,
-  })
-  @IsNotEmpty()
-  @IsNumber()
-  @IsInt()
-  userId: number;
 }

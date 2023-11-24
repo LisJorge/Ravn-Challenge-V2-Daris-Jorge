@@ -1,13 +1,12 @@
 import { Module } from '@nestjs/common';
 import { AuthService } from './services';
-import { UsersModule } from 'src/users/users.module';
-import { AuthController } from './controllers/auth.controller';
+import { AuthController } from './controllers';
 import { PassportModule } from '@nestjs/passport';
 import { JwtModule } from '@nestjs/jwt';
-import { JwtStrategy, LocalStrategy } from './strategies';
+import { JwtStrategy, LocalStrategy, RefreshTokenStrategy } from './strategies';
 import { MailModule } from '@/mail/mail.module';
-import { RefreshTokenStrategy } from './strategies/refresh-token.strategy';
 import { ConfigModule } from '@nestjs/config';
+import { UsersModule } from '@/users/users.module';
 
 @Module({
   imports: [
@@ -19,7 +18,7 @@ import { ConfigModule } from '@nestjs/config';
         return {
           secret: process.env.JWT_SECRET,
           signOptions: {
-            expiresIn: '10s',
+            expiresIn: '12h',
           },
         };
       },

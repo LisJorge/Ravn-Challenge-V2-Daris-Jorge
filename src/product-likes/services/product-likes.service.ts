@@ -7,9 +7,12 @@ import { PrismaService } from '@/prisma/services';
 export class ProductLikesService {
   constructor(private prisma: PrismaService){}
 
-  async create(productLikeDto: ProductLikeDto): Promise<ProductLike> {
+  async create(productLikeDto: ProductLikeDto, userId: number): Promise<ProductLike> {
     return this.prisma.productLike.create({
-      data: productLikeDto,
+      data: {
+        ...productLikeDto,
+        userId,
+      },
     });
   }
   
@@ -22,12 +25,13 @@ export class ProductLikesService {
       throw new NotFoundException('Like not found');
     }
   }
-  async remove(productLikeDto: ProductLikeDto) {
+  async remove(productLikeDto: ProductLikeDto, userId: number) {
     await this.findOne(productLikeDto);
     const deleteTask = await this.prisma.productLike.delete({
       where: {
         productId_userId: {
-          ...productLikeDto
+          ...productLikeDto,
+          userId,
         }
       }});
     return {

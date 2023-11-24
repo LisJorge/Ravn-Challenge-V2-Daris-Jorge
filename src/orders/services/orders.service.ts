@@ -10,13 +10,14 @@ export class OrdersService {
     private prisma: PrismaService,
   ) {}
 
-  async create(createOrderDto: CreateOrderDto): Promise<Order> {
+  async create(createOrderDto: CreateOrderDto, userId: number): Promise<Order> {
     const { orderDetails, ...orderData} = createOrderDto;
     const total = getTotalFromOrderDetails(orderDetails);
     const order = await this.prisma.order.create({
       data: {
         total,
         ...orderData,
+        userId,
         orderDetails: {
           createMany: {
             data: orderDetails

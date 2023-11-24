@@ -10,13 +10,6 @@ import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateOrderDto {
   @ApiProperty({
-    example: 1,
-    required: true,
-  })
-  @IsNotEmpty()
-  userId: number;
-
-  @ApiProperty({
     required: true,
     isArray: true,
     example: [{
