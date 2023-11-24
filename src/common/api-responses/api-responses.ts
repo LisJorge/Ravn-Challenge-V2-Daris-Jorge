@@ -12,6 +12,11 @@ export const UNAUTHORIZED_RESPONSE: ApiResponseOptions = {
   description: 'Unauthorized'
 }
 
+export const NOT_FOUND_EXCEPTION: ApiResponseOptions = {
+  status: HttpStatus.NOT_FOUND,
+  description: 'Data not found'
+}
+
 export const BAD_REQUEST_RESPONSE: ApiResponseOptions = 
   {
     status: HttpStatus.BAD_REQUEST,

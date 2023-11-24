@@ -1,4 +1,9 @@
-import { BadRequestException, ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import {
   AuthResponseDto,
   AuthUserDto,
@@ -31,16 +36,11 @@ export class AuthService {
 
   async getTokens(tokenPayload: TokenPayloadDto) {
     const [access_token, refresh_token] = await Promise.all([
-      this.jwtService.signAsync(
-        tokenPayload
-      ),
-      this.jwtService.signAsync(
-        tokenPayload,
-        {
-          secret: this.configService.get<string>('JWT_REFRESH_SECRET'),
-          expiresIn: '7d',
-        },
-      ),
+      this.jwtService.signAsync(tokenPayload),
+      this.jwtService.signAsync(tokenPayload, {
+        secret: this.configService.get<string>('JWT_REFRESH_SECRET'),
+        expiresIn: '7d',
+      }),
     ]);
 
     return {
@@ -51,27 +51,29 @@ export class AuthService {
 
   async getForgotPasswordToken(email: string): Promise<string> {
     return this.jwtService.signAsync(
-      {email},
+      { email },
       {
         secret: this.configService.get<string>('JWT_FORGOT_PASSWORD_SECRET'),
         expiresIn: '20m',
       },
-    )
+    );
   }
 
   async validateUser(username: string, password: string): Promise<any> {
     const user = await this.usersService.findOneByEmail(username);
-    const { password: dbPassword, ...userData } = user;
-    const passwordMatch = await this.checkPassword(dbPassword, password);
-    if (passwordMatch) {
-      return userData;
-    } else {
-      return null;
+    if (user) {
+      const { password: dbPassword, ...userData } = user;
+      const passwordMatch = await this.checkPassword(dbPassword, password);
+      if (passwordMatch) {
+        return userData;
+      } else {
+        return null;
+      }
     }
     return null;
   }
 
-  async generateJwt(user: AuthUserDto): Promise<AuthResponseDto> {
+  async login(user: AuthUserDto): Promise<AuthResponseDto> {
     const { role, userId: sub } = user;
     const payload: TokenPayloadDto = {
       role,
@@ -89,7 +91,7 @@ export class AuthService {
 
     const userExists = await this.usersService.findOneByEmail(email);
 
-    if(userExists){
+    if (userExists) {
       throw new BadRequestException('User already exists');
     }
 
@@ -97,7 +99,7 @@ export class AuthService {
       ...userData,
       password: hashedPassword,
       role: defaultRole,
-      email
+      email,
     });
 
     const tokenPayload: TokenPayloadDto = {
@@ -107,36 +109,40 @@ export class AuthService {
 
     const tokens = await this.getTokens(tokenPayload);
 
-    await this.usersService.saveRefreshToken(userCreated.userId, tokens.refresh_token);
+    await this.usersService.saveRefreshToken(
+      userCreated.userId,
+      tokens.refresh_token,
+    );
 
-    return tokens
-  }
-
-  async refreshTokens(userId: number, refreshToken: string) {
-    const { refreshToken: refreshTokenFromDb, role } = await this.usersService.findOneById(userId);
-    if (!refreshTokenFromDb){
-      throw new ForbiddenException('Access Denied');
-    }
-    const refreshTokenMatches = refreshToken === refreshTokenFromDb;
-    if (!refreshTokenMatches){ 
-      throw new ForbiddenException('Access Denied')
-    };
-    const tokens = await this.getTokens({
-      sub: userId, 
-      role
-    });
-    await this.usersService.saveRefreshToken(userId, tokens.refresh_token)
     return tokens;
   }
 
-  async signOut(userId: number){
+  async refreshTokens(userId: number, refreshToken: string) {
+    const { refreshToken: refreshTokenFromDb, role } =
+      await this.usersService.findOneById(userId);
+    if (!refreshTokenFromDb) {
+      throw new ForbiddenException('Access Denied');
+    }
+    const refreshTokenMatches = refreshToken === refreshTokenFromDb;
+    if (!refreshTokenMatches) {
+      throw new ForbiddenException('Access Denied');
+    }
+    const tokens = await this.getTokens({
+      sub: userId,
+      role,
+    });
+    await this.usersService.saveRefreshToken(userId, tokens.refresh_token);
+    return tokens;
+  }
+
+  async signOut(userId: number) {
     await this.usersService.removeRefreshToken(userId);
   }
 
   async forgotPassword(email: string): Promise<string> {
     const user = await this.usersService.findOneByEmail(email);
-    if(user){
-      const {userId} = user;
+    if (user) {
+      const { userId } = user;
       const token = await this.getForgotPasswordToken(email);
       await this.usersService.savePasswordToken(userId, token);
       return token;
@@ -144,17 +150,18 @@ export class AuthService {
     throw new NotFoundException('User does not exist');
   }
 
-  async resetPassword(token: string, newPassword: string){
-    const { email } = await this.jwtService.decode(token);
+  async resetPassword(token: string, newPassword: string) {
+    const tokenDecoded = await this.jwtService.decode(token);
+    const email = tokenDecoded?.email;
     const hashedPassword = await this.encodePassword(newPassword);
     const user = await this.usersService.findOneByEmail(email);
     const tokenIsValid = token === user.passwordToken;
-    if(user &&  tokenIsValid ){
+    if (user && tokenIsValid) {
       const { userId } = user;
       await Promise.all([
         this.usersService.removePasswordToken(userId, hashedPassword),
-        this.mailService.sendPasswordResetConfirmation(user)
-      ])
+        this.mailService.sendPasswordResetConfirmation(user),
+      ]);
     } else {
       throw new BadRequestException('Invalid information');
     }

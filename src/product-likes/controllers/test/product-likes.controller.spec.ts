@@ -1,5 +1,4 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { PrismaService } from '@/prisma/services';
 import { ProductLikesController } from '../product-likes.controller';
 import { ProductLikesService } from '@/product-likes/services';
 

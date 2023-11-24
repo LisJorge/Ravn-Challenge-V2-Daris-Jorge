@@ -93,7 +93,9 @@
       "decorator.ts",
       "strategy.ts",
       "utils.ts",
-      "index.ts"
+      "index.ts",
+      "guard.ts",
+      "main.ts"
     ],
     "testEnvironment": "node",
     "moduleNameMapper": {
