@@ -10,9 +10,10 @@ describe('ProductLikesController', () => {
   };
 
   const productLikeDto = {
-    userId: 1,
     productId: 1,
   };
+
+  const userId = 1;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -30,14 +31,14 @@ describe('ProductLikesController', () => {
 
   describe('create', () => {
     it('should call prisma create method', async () => {
-      await controller.create(productLikeDto);
+      await controller.create(productLikeDto, userId);
       expect(mockService.create).toHaveBeenCalled();
     });
   });
 
   describe('remove', () => {
     it('should call prisma create method', async () => {
-      await controller.remove(productLikeDto);
+      await controller.remove(productLikeDto, userId);
       expect(mockService.remove).toHaveBeenCalled();
     });
   });

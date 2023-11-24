@@ -38,8 +38,8 @@ export class CartsController {
   @ApiResponse(CREATED_RESPONSE)
   @ApiResponse(UNAUTHORIZED_RESPONSE)
   @ApiResponse(FORBIDDEN_RESPONSE)
-  async create(@Body() createCartDto: CreateCartDto): Promise<CartDetail> {
-    return this.cartsService.create(createCartDto);
+  async create(@Body() createCartDto: CreateCartDto, @CurrentUser('sub') userId: number): Promise<CartDetail> {
+    return this.cartsService.create(createCartDto, userId);
   }
 
   @Get()

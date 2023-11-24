@@ -18,6 +18,7 @@ import { Roles } from '@/auth/decorators';
 import { CurrentUser } from '@/common/decorators';
 
 @UseGuards(JwtAuthGuard, RolesGuard)
+@Roles(Role.CLIENT)
 @ApiTags('Orders')
 @Controller('orders')
 export class OrdersController {
@@ -25,7 +26,6 @@ export class OrdersController {
 
   @HttpCode(HttpStatus.CREATED)
   @Post()
-  @Roles(Role.MANAGER)
   @ApiResponse(CREATED_RESPONSE)
   @ApiResponse(UNAUTHORIZED_RESPONSE)
   @ApiResponse(FORBIDDEN_RESPONSE)
@@ -35,7 +35,14 @@ export class OrdersController {
 
   @Get()
   @ApiResponse(GENERAL_RESPONSE)
-  async findAll(@CurrentUser('sub') userId: number): Promise<Order[]> {
+  async findAllByUserId(@CurrentUser('sub') userId: number): Promise<Order[]> {
+    return this.ordersService.findAll({userId});
+  }
+
+  @Get('show-all-orders')
+  @Roles(Role.MANAGER)
+  @ApiResponse(GENERAL_RESPONSE)
+  async findAll(@Query('userId') userId?: number): Promise<Order[]> {
     return this.ordersService.findAll({userId});
   }
 }

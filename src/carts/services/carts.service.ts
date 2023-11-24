@@ -11,11 +11,18 @@ export class CartsService {
     private productsService: ProductsService,
   ) {}
 
-  async create(createCartDto: CreateCartDto): Promise<CartDetail> {
+  async create(createCartDto: CreateCartDto, userId: number): Promise<CartDetail> {
     const { productId, quantity } = createCartDto;
     const { stock } = await this.productsService.findOne(productId);
     if (stock >= quantity) {
-      return await this.prisma.cartDetail.create({ data: createCartDto });
+      console.log({
+        ...createCartDto,
+        userId
+      })
+      return await this.prisma.cartDetail.create({ data: {
+        ...createCartDto,
+        userId
+      } });
     }
     throw new BadRequestException('Not enough products in stock');
   }
@@ -41,8 +48,9 @@ export class CartsService {
         where: { productId_userId: { productId, userId } },
         data: updateCartDto,
       });
+    } else {
+      throw new BadRequestException('Not enough products in stock');
     }
-    throw new BadRequestException('Not enough products in stock');
   }
 
   async remove(productId: number, userId: number) {
@@ -56,7 +64,7 @@ export class CartsService {
     });
     return {
       data: deleteTask,
-      message: `Success delete ${productId} product from ${userId} cart `,
+      message: `Success delete ${productId} product from ${userId} user cart `,
     };
   }
 }

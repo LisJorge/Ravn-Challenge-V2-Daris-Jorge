@@ -11,7 +11,6 @@ describe('OrdersController', () => {
   };
 
   const createOrderDto: CreateOrderDto= {
-    userId: 1,
     orderDetails: [
       {
         productId: 1,
@@ -25,6 +24,7 @@ describe('OrdersController', () => {
       }
     ]
   };
+  const userId=1;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -40,14 +40,14 @@ describe('OrdersController', () => {
 
   describe('create', () => {
     it('should call create method', async () => {
-      await controller.create(createOrderDto);
+      await controller.create(createOrderDto, userId);
       expect(mockService.create).toHaveBeenCalled();
     });
   });
 
   describe('findAll', () => {
     it('should call findAll method', async () => {
-      await controller.findAll({});
+      await controller.findAll();
       expect(mockService.findAll).toHaveBeenCalled();
     });
   });

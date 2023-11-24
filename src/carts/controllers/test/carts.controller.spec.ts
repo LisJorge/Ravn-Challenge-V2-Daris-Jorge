@@ -18,6 +18,7 @@ describe('CartsController', () => {
     userId: 1,
     quantity: 1,
   }
+  const userId = 1;
 
   beforeEach(async () => {
     const moduleRef = await Test.createTestingModule({
@@ -40,7 +41,7 @@ describe('CartsController', () => {
   describe('create', () => {
     it('should return a cart', async () => {
       mockCartsService.create.mockImplementation(() => mockCart);
-      const request = await cartsController.create(mockCart);
+      const request = await cartsController.create(mockCart, userId);
       expect(request).toEqual(mockCart);
     });
   });

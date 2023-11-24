@@ -9,6 +9,6 @@ export const CurrentUser = createParamDecorator(
     if(!user){
       throw new Exception('Invalid information');
     }
-    return data? user['data']: user;
+    return data? user[data]: user;
   },
 );

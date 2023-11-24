@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { PrismaService } from '@/prisma/services';
 import { ProductLikesService } from '../product-likes.service';
-import { NotFoundException } from '@nestjs/common';
+import { ProductsService } from '@/products/services';
 
 describe('ProductLikesService', () => {
   let service: ProductLikesService;
@@ -9,21 +9,40 @@ describe('ProductLikesService', () => {
     productLike: {
       create: jest.fn(),
       findFirstOrThrow: jest.fn(),
+      findFirst: jest.fn(),
       delete: jest.fn()
     }
   }
 
+  const mockProductService = {
+    findOne: jest.fn()
+  }
+
   const productLikeDto = {
-    userId: 1,
     productId: 1,
   }
 
+  const mockProductLike = {
+    productId:1,
+    userId: 1,
+  }
+
+  const userId = 1;
+
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [ProductLikesService, PrismaService],
+      providers: [
+        ProductLikesService,
+        {
+          provide: PrismaService,
+          useValue: mockPrisma
+        },
+        {
+          provide: ProductsService,
+          useValue: mockProductService,
+        }
+      ],
     })
-    .overrideProvider(PrismaService)
-    .useValue(mockPrisma)
     .compile();
 
     service = module.get<ProductLikesService>(ProductLikesService);
@@ -31,19 +50,20 @@ describe('ProductLikesService', () => {
 
   describe('create', () => {
     it('should call prisma create method', async () => {
-      await service.create(productLikeDto);
+      await service.create(productLikeDto, userId);
       expect(mockPrisma.productLike.create).toHaveBeenCalled();
     });
   })
 
   describe('findOne', () => {
-    it('should call prisma create method', async () => {
+    it('should call prisma findOne method', async () => {
+      mockPrisma.productLike.findFirst.mockImplementationOnce(() => mockProductLike)
       await service.findOne(productLikeDto);
-      expect(mockPrisma.productLike.findFirstOrThrow).toHaveBeenCalled();
+      expect(mockPrisma.productLike.findFirst).toHaveBeenCalled();
     });
   
     it('should throw an exception', async () => {
-      mockPrisma.productLike.findFirstOrThrow.mockImplementationOnce(() => {throw new Error('')})
+      mockPrisma.productLike.findFirst.mockImplementationOnce(() => {null})
       try {
         await service.findOne(productLikeDto); 
       } catch (e) {
@@ -54,7 +74,8 @@ describe('ProductLikesService', () => {
 
   describe('remove', () => {
     it('should call prisma create method', async () => {
-      await service.remove(productLikeDto);
+      mockPrisma.productLike.findFirst.mockImplementationOnce(() => mockProductLike)
+      await service.remove(productLikeDto, userId);
       expect(mockPrisma.productLike.delete).toHaveBeenCalled();
     });
   });

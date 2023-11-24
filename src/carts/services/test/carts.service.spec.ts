@@ -2,8 +2,9 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { PrismaService } from '@/prisma/services';
 import { CartsService } from '../carts.service';
 import { CartDetail } from '@prisma/client';
+import { ProductsService } from '@/products/services';
 
-describe('ProductLikesService', () => {
+describe('CartsService', () => {
   let service: CartsService;
   const mockPrisma = {
     cartDetail: {
@@ -13,11 +14,17 @@ describe('ProductLikesService', () => {
       delete: jest.fn(),
     }
   }
+  const mockProductService = {
+    findOne: jest.fn(() => ({stock: 100}))
+  }
+  
   const mockCart: CartDetail = {
     productId: 1,
     userId: 1,
     quantity: 1,
   }
+  
+  const userId = 1;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -25,6 +32,10 @@ describe('ProductLikesService', () => {
         {
           provide: PrismaService,
           useValue: mockPrisma
+        },
+        {
+          provide: ProductsService,
+          useValue: mockProductService,
         }
       ],
     }).compile();
@@ -33,7 +44,7 @@ describe('ProductLikesService', () => {
 
   describe('create', () => {
     it('should call prisma create method', async () => {
-      await service.create(mockCart);
+      await service.create(mockCart, userId);
       expect(mockPrisma.cartDetail.create).toHaveBeenCalled();
     });
   });

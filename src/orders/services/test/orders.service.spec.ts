@@ -2,6 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { OrdersService } from '../orders.service';
 import { PrismaService } from '@/prisma/services';
 import { CreateOrderDto } from '../../dtos';
+import { ProductsService } from '@/products/services';
 
 describe('OrdersService', () => {
   let service: OrdersService;
@@ -12,8 +13,13 @@ describe('OrdersService', () => {
     }
   }
 
+  const mockProductService = {
+    findOne: jest.fn(() => ({stock: 100}))
+  }
+
+  const userId =1;
+
   const createOrderDto: CreateOrderDto= {
-    userId: 1,
     orderDetails: [
       {
         productId: 1,
@@ -36,6 +42,10 @@ describe('OrdersService', () => {
         {
           provide: PrismaService,
           useValue: mockPrisma,
+        },
+        {
+          provide: ProductsService,
+          useValue: mockProductService,
         }
       ],
     }).compile();
@@ -46,7 +56,7 @@ describe('OrdersService', () => {
   describe('create', () => {
     it('should return a new order', async () => {
       mockPrisma.order.create.mockImplementation((orderData) => (orderData.data))
-      const request = await service.create(createOrderDto);
+      const request = await service.create(createOrderDto,userId );
       expect(request.total).toBe(total)
       expect(mockPrisma.order.create).toHaveBeenCalled();
     });

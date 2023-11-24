@@ -5,9 +5,12 @@ import { PrismaService } from '@/prisma/services';
 
 @Injectable()
 export class ProductLikesService {
-  constructor(private prisma: PrismaService){}
+  constructor(private prisma: PrismaService) {}
 
-  async create(productLikeDto: ProductLikeDto, userId: number): Promise<ProductLike> {
+  async create(
+    productLikeDto: ProductLikeDto,
+    userId: number,
+  ): Promise<ProductLike> {
     return this.prisma.productLike.create({
       data: {
         ...productLikeDto,
@@ -15,15 +18,15 @@ export class ProductLikesService {
       },
     });
   }
-  
-  async findOne(productLikeDto: ProductLikeDto): Promise<ProductLike>{
-    try{
-      return this.prisma.productLike.findFirstOrThrow({
-        where: productLikeDto,
-      });
-    } catch(e){
+
+  async findOne(productLikeDto: ProductLikeDto): Promise<ProductLike> {
+    const productLike = await this.prisma.productLike.findFirst({
+      where: productLikeDto,
+    });
+    if (!productLike) {
       throw new NotFoundException('Like not found');
     }
+    return productLike;
   }
   async remove(productLikeDto: ProductLikeDto, userId: number) {
     await this.findOne(productLikeDto);
@@ -32,12 +35,12 @@ export class ProductLikesService {
         productId_userId: {
           ...productLikeDto,
           userId,
-        }
-      }});
+        },
+      },
+    });
     return {
       data: deleteTask,
       message: `Success delete like from ${productLikeDto.productId}`,
     };
   }
-
 }

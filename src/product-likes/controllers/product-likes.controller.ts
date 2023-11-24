@@ -11,7 +11,7 @@ import { ProductLikesService } from '../services';
 import { ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ProductLike, Role } from '@prisma/client';
 import { ProductLikeDto } from '../dtos';
-import { RolesGuard } from '@/auth/guards';
+import { JwtAuthGuard, RolesGuard } from '@/auth/guards';
 import { Roles } from '@/auth/decorators';
 import {
   CREATED_RESPONSE,
@@ -23,7 +23,7 @@ import { CurrentUser } from '@/common/decorators';
 
 @ApiTags('Product-Likes')
 @Roles(Role.CLIENT)
-@UseGuards(RolesGuard)
+@UseGuards(JwtAuthGuard,RolesGuard)
 @Controller('product-likes')
 export class ProductLikesController {
   constructor(private readonly productLikesService: ProductLikesService) {}
