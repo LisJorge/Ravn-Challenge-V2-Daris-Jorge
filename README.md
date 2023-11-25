@@ -50,7 +50,7 @@ $ npm run test:cov
 ```
 
 ## :mushroom: Database
-![alt text](https://drive.google.com/file/d/10CX5C3hlMezyKXhO6b0dKIt7uvB9hmFJ/view?usp=drive_link)
+![alt text](https://res.cloudinary.com/dqvur3dkg/image/upload/v1700897958/v6dwhz5csylevaawd5lz.png)
 
 ## :mushroom: Operations
 1. Authentication endpoints (sign up, sign in, sign out)
