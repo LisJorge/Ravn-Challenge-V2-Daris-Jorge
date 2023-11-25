@@ -72,6 +72,18 @@ export class ProductsController {
     return await this.productsService.update(id, updateProductDto);
   }
 
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @Patch('disable/:id')
+  @Roles(Role.MANAGER)
+  @ApiResponse(UPDATE_RESPONSE)
+  @ApiResponse(UNAUTHORIZED_RESPONSE)
+  @ApiResponse(FORBIDDEN_RESPONSE)
+  async updateAvailability(
+    @Param('id') id: number,
+  ) {
+    return await this.productsService.updateProductAvailable(id);
+  }
+
   @Delete(':id')
   @Roles(Role.MANAGER)
   @ApiResponse(GENERAL_RESPONSE)

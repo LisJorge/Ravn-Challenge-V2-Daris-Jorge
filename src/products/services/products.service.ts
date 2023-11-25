@@ -44,7 +44,7 @@ export class ProductsService {
   async findAll(
     filter: GetAllProductsDto,
   ): Promise<PaginatedOutputDto<ProductDto>> {
-    const { page, perPage, categoryId } = filter;
+    const { page, perPage, categoryId, ...filterData } = filter;
     const paginate = createPaginator({ perPage });
     const queryFilter = categoryId
       ? {
@@ -57,7 +57,10 @@ export class ProductsService {
       this.prisma.product,
       {
         include: {categories: true},
-        where: queryFilter,
+        where: {
+          ...filterData,
+          ...queryFilter
+        },
       },
       { page },
     );
