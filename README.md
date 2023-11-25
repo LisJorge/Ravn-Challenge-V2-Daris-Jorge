@@ -2,7 +2,7 @@
 
 My cat tiny store, small API built with NestJS.
 
-## Features
+## :mushroom:  Features
 
 - Authentication and authorization protection for endpoints.
 - Authorization roles: Client, Manager.
@@ -10,7 +10,7 @@ My cat tiny store, small API built with NestJS.
 - Forgot/Reset password funcionality
 - Send email after password reset.
 
-## Tech
+## :mushroom: Tech
 
 - PostgreSQL and Prisma
 - NestJs
@@ -20,7 +20,7 @@ My cat tiny store, small API built with NestJS.
 - ESLint
 - REST
 
-## Instalation
+## :mushroom: Instalation
 
 ```bash
 $ npm install
@@ -49,7 +49,7 @@ $ npm run test
 $ npm run test:cov
 ```
 
-## Operations
+## :mushroom: Operations
 1. Authentication endpoints (sign up, sign in, sign out)
 ```
 POST: /auth/login
