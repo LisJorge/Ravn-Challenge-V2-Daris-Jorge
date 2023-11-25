@@ -27,6 +27,7 @@
       "@products/*": ["src/product/*"],
       "@users/*": ["src/users/*"],
       "@mail/*": ["src/mail/*"],
+      "@cloudinary/*": ["src/cloudinary/*"],
     }
   }
 }

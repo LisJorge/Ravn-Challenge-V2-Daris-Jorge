@@ -2,6 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { ProductsService } from '../products.service';
 import { CreateProductDto } from '@/products/dtos';
 import { PrismaService } from '@/prisma/services';
+import { CloudinaryService } from '@/cloudinary/services';
 
 describe('ProductsService', () => {
   let service: ProductsService;
@@ -26,7 +27,7 @@ describe('ProductsService', () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [ProductsService, PrismaService],
+      providers: [ProductsService, PrismaService, CloudinaryService],
     })
       .overrideProvider(PrismaService)
       .useValue(mockPrisma)

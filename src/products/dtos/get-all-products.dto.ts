@@ -10,5 +10,5 @@ export class GetAllProductsDto extends PaginationDto {
 
   @IsOptional()
   @IsBoolean()
-  isActive: boolean = true;
+  isActive?: boolean;
 }

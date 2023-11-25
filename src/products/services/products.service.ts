@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { Product } from '@prisma/client';
 import {
   CreateProductDto,
@@ -9,11 +9,14 @@ import {
 import { createPaginator } from 'prisma-pagination';
 import { PrismaService } from '@/prisma/services';
 import { PaginatedOutputDto } from '@/common/dto';
+import { CloudinaryService } from '@/cloudinary/services';
+import { formatFileName } from '../utils';
 
 @Injectable()
 export class ProductsService {
   constructor(
     private prisma: PrismaService,
+    private cloudinaryService: CloudinaryService,
   ) {}
 
   async create(createProductDto: CreateProductDto): Promise<Product> {
@@ -91,6 +94,23 @@ export class ProductsService {
       data: { isActive: !productSaved.isActive },
     });
   }
+
+  async uploadImage(file: Express.Multer.File, productId: number){
+    const newFilename = formatFileName(file.originalname);
+    const fileFormatted = {
+      ...file,
+      originalname: newFilename,
+      use_filename: true,
+    }
+    await this.prisma.product.update({
+      where: { productId },
+      data: { imageUrl: newFilename },
+    });
+    return await this.cloudinaryService.uploadImage(fileFormatted).catch((e) => {
+      throw new BadRequestException(e);
+    });
+  }
+
 
   async remove(productId: number) {
     await this.findOne(productId);

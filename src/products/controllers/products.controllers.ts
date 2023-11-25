@@ -10,6 +10,11 @@ import {
   Patch,
   Delete,
   UseGuards,
+  UseInterceptors,
+  UploadedFile,
+  ParseFilePipe,
+  FileTypeValidator,
+  MaxFileSizeValidator,
 } from '@nestjs/common';
 import {
   CreateProductDto,
@@ -25,6 +30,7 @@ import { CREATED_RESPONSE, FORBIDDEN_RESPONSE, GENERAL_RESPONSE, UNAUTHORIZED_RE
 import { ApiPaginatedResponse } from '@/common/decorators';
 import { PaginatedOutputDto } from '@/common/dto';
 import { ProductsService } from '../services';
+import { FileInterceptor } from '@nestjs/platform-express';
 
 @UseGuards(JwtAuthGuard, RolesGuard)
 @ApiTags('Products')
@@ -82,6 +88,28 @@ export class ProductsController {
     @Param('id') id: number,
   ) {
     return await this.productsService.updateProductAvailable(id);
+  }
+
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @Patch('upload-image/:id')
+  @Roles(Role.MANAGER)
+  @ApiResponse(UPDATE_RESPONSE)
+  @ApiResponse(UNAUTHORIZED_RESPONSE)
+  @ApiResponse(FORBIDDEN_RESPONSE)
+  @UseInterceptors(FileInterceptor('file'))
+  async uploadImage(
+    @UploadedFile(
+      new ParseFilePipe({
+        validators: [
+          new FileTypeValidator({ fileType: '.(png|jpeg|jpg)' }),
+          new MaxFileSizeValidator({ maxSize: 1024 * 1024 * 4 }),
+        ],
+      }),
+    )
+    file: Express.Multer.File,
+    @Param('id') id: number,
+  ) {
+    return await this.productsService.uploadImage(file,id);
   }
 
   @Delete(':id')

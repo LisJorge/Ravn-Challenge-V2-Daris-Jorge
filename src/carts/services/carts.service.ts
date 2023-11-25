@@ -15,10 +15,6 @@ export class CartsService {
     const { productId, quantity } = createCartDto;
     const { stock } = await this.productsService.findOne(productId);
     if (stock >= quantity) {
-      console.log({
-        ...createCartDto,
-        userId
-      })
       return await this.prisma.cartDetail.create({ data: {
         ...createCartDto,
         userId
