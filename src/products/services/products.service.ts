@@ -7,8 +7,8 @@ import {
   UpdateProductDto,
 } from '../dtos';
 import { createPaginator } from 'prisma-pagination';
-import { PaginatedOutputDto } from 'src/common/dto';
 import { PrismaService } from '@/prisma/services';
+import { PaginatedOutputDto } from '@/common/dto';
 
 @Injectable()
 export class ProductsService {
