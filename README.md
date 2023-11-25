@@ -49,6 +49,9 @@ $ npm run test
 $ npm run test:cov
 ```
 
+## :mushroom: Database
+![alt text](https://drive.google.com/file/d/10CX5C3hlMezyKXhO6b0dKIt7uvB9hmFJ/view?usp=drive_link)
+
 ## :mushroom: Operations
 1. Authentication endpoints (sign up, sign in, sign out)
 ```
